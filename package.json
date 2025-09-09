@@ -1,8 +1,12 @@
 {
-  "name": "personal-website",
+  "name": "portfolio",
   "version": "1.0.0",
-  "private": true,
+  "main": "script.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "nodemailer": "^7.0.6"
+    "@sendgrid/mail": "^8.1.5"
   }
 }
