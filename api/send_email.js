@@ -1,38 +1,31 @@
-const nodemailer = require("nodemailer");
+const sgMail = require('@sendgrid/mail');
 
-module.exports = async (req, res) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+module.exports = async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { name, email, subject, message } = req.body;
 
   if (!name || !email || !subject || !message) {
-    return res.status(400).json({ error: "All fields are required" });
+    return res.status(400).json({ error: 'All fields are required' });
   }
 
+  const msg = {
+    to: process.env.SENDGRID_TO_EMAIL,
+    from: process.env.SENDGRID_TO_EMAIL, // can also be a verified sender
+    replyTo: email,
+    subject: `[Portfolio] ${subject}`,
+    text: `From: ${name} <${email}>\n\n${message}`,
+  };
+
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.mail.me.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      replyTo: email,
-      to: process.env.EMAIL_USER,
-      subject: `[Portfolio] ${subject}`,
-      text: `From: ${name} <${email}>\n\n${message}`,
-    });
-
-    return res.status(200).json({ success: "Message sent successfully!" });
+    await sgMail.send(msg);
+    return res.status(200).json({ success: 'Message sent successfully!' });
   } catch (error) {
-    console.error("Mail error:", error);
-    return res.status(500).json({ error: "Failed to send message." });
+    console.error('SendGrid error:', error);
+    return res.status(500).json({ error: 'Failed to send message.' });
   }
 };
