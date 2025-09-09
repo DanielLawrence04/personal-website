@@ -13,25 +13,28 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Transporter (using Gmail SMTP as example, you can use iCloud too)
+    // iCloud SMTP transporter
     const transporter = nodemailer.createTransport({
-      service: "gmail", // or "icloud"
+      host: "smtp.mail.me.com", // iCloud SMTP host
+      port: 587, // 587 for STARTTLS
+      secure: false, // STARTTLS, not SSL
       auth: {
-        user: process.env.EMAIL_USER, // set in Vercel env
-        pass: process.env.EMAIL_PASS, // app password
+        user: process.env.EMAIL_USER, // your full iCloud email
+        pass: process.env.EMAIL_PASS, // app-specific password
       },
     });
 
     await transporter.sendMail({
-      from: email,
-      to: process.env.EMAIL_USER, // your own inbox
+      from: process.env.EMAIL_USER, // must match authenticated iCloud email
+      replyTo: email, // visitor's email
+      to: process.env.EMAIL_USER, // send to yourself
       subject: `[Portfolio] ${subject}`,
       text: `From: ${name} <${email}>\n\n${message}`,
     });
 
     return res.status(200).json({success: "Message sent successfully!"});
   } catch (error) {
-    console.error(error);
+    console.error("Mail error:", error);
     return res.status(500).json({error: "Failed to send message."});
   }
 }
