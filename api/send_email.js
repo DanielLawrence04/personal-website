@@ -1,7 +1,6 @@
-// api/send_email.js
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -14,19 +13,19 @@ export default async function handler(req, res) {
 
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.mail.me.com",  // iCloud SMTP server
+      host: "smtp.mail.me.com",
       port: 587,
-      secure: false,             // STARTTLS on port 587
+      secure: false,
       auth: {
-        user: process.env.EMAIL_USER, // your full iCloud email
-        pass: process.env.EMAIL_PASS, // app-specific password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER, // must match the authenticated iCloud address
-      replyTo: email,               // the visitor's email
-      to: process.env.EMAIL_USER,   // send to yourself
+      from: process.env.EMAIL_USER,
+      replyTo: email,
+      to: process.env.EMAIL_USER,
       subject: `[Portfolio] ${subject}`,
       text: `From: ${name} <${email}>\n\n${message}`,
     });
@@ -36,4 +35,4 @@ export default async function handler(req, res) {
     console.error("Mail error:", error);
     return res.status(500).json({ error: "Failed to send message." });
   }
-}
+};
