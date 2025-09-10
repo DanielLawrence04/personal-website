@@ -857,6 +857,7 @@ section {
   }
 
   .hero-content {
+    padding-top: 50px;
     grid-template-columns: 1fr;
     gap: 2rem;
     text-align: center;
@@ -937,3 +938,4 @@ section {
     margin: 0 1rem;
   }
 }
+
